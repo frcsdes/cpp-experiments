@@ -27,8 +27,8 @@ auto operator,(Unary<T, U> const& lhs, Unary<U, V> const& rhs) {
 }
 
 template<class T>
-auto operator*(unsigned int n, Unary<T, T> const& unary) {
-    return Unary<T, T>([n, &unary](T x) {
+auto operator^(Unary<T, T> const& unary, unsigned int n) {
+    return Unary<T, T>([&unary, n](T x) {
         for (unsigned int i = 0; i < n; ++i)
             x = unary(x);
         return x;
@@ -47,8 +47,10 @@ int main() {
         return std::sqrt(x);
     });
 
-    auto composition = (square, 5 * add1, sqrt);
-    std::cout << composition(2) << std::endl;
+    auto composition = (square, add1 ^ 5, sqrt);
+    std::cout
+        << "Computing sqrt(2 ^ 2 + 5) = "
+        << composition(2) << std::endl;
 
     return 0;
 }
