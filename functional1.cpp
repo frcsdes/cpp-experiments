@@ -8,10 +8,10 @@ public:
     explicit Literal(T value)
         : m_value(std::forward<T>(value)) {}
 
-    auto operator+(T right) { return m_value + right; }
-    auto operator-(T right) { return m_value - right; }
-    auto operator*(T right) { return m_value * right; }
-    auto operator/(T right) { return m_value / right; }
+    auto operator+(T right) const { return m_value + right; }
+    auto operator-(T right) const { return m_value - right; }
+    auto operator*(T right) const { return m_value * right; }
+    auto operator/(T right) const { return m_value / right; }
 
     auto operator()() const {
         return m_value;

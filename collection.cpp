@@ -20,7 +20,7 @@ public:
         return Base::template get<U>();
     }
 
-    auto sum() {
+    auto sum() const {
         return m_value + Base::sum();
     }
 
@@ -48,7 +48,7 @@ public:
         return m_value;
     }
 
-    auto sum() {
+    auto sum() const {
         return m_value;
     }
 

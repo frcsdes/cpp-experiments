@@ -20,7 +20,7 @@ public:
         return *this;
     }
 
-    TOut operator*() {
+    TOut operator*() const {
         return m_value;
     }
 
