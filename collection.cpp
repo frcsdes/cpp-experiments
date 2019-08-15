@@ -15,9 +15,13 @@ public:
         return m_value;
     }
 
-    template<class U>
+    template<class U, std::enable_if_t<!std::is_same_v<T, U>, char> = 0>
     U& get() {
         return Base::template get<U>();
+    }
+
+    auto sum() {
+        return m_value + Base::sum();
     }
 
     void print() const {
@@ -44,6 +48,10 @@ public:
         return m_value;
     }
 
+    auto sum() {
+        return m_value;
+    }
+
 private:
     T m_value;
 };
@@ -53,5 +61,6 @@ int main() {
     Collection<int, float, double> collection(42, 3.14f, 2.718);
     collection.get<double>() = 6.626;
     collection.print();
+    std::cout << "Sum is " << collection.sum() << std::endl;
     return 0;
 }
