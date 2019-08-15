@@ -11,30 +11,44 @@ public:
     explicit Unary(Functor functor)
         : m_functor(std::move(functor)) {}
 
-    U operator()(T operand) const {
-        return m_functor(operand);
-    }
-
-    template<class V>
-    auto operator,(Unary<U, V> const& other) const {
-        return Unary<T, V>([this, &other](T operand) {
-            return other((*this)(operand));
-        });
+    U operator()(T x) const {
+        return m_functor(x);
     }
 
 private:
     Functor m_functor;
 };
 
+template<class T, class U, class V>
+auto operator,(Unary<T, U> const& lhs, Unary<U, V> const& rhs) {
+    return Unary<T, V>([&lhs, &rhs](T x) {
+        return rhs(lhs(x));
+    });
+}
+
+template<class T>
+auto operator*(unsigned int n, Unary<T, T> const& unary) {
+    return Unary<T, T>([n, &unary](T x) {
+        for (unsigned int i = 0; i < n; ++i)
+            x = unary(x);
+        return x;
+    });
+}
+
+
 int main() {
-    Unary<float, float> square([](float x) {
+    Unary<int, int> add1([](int x) {
+        return x + 1;
+    });
+    Unary<int, int> square([](int x) {
         return x * x;
     });
-    Unary<float, int> round([](float x) {
-        return static_cast<int>(std::round(x));
+    Unary<int, double> sqrt([](int x) {
+        return std::sqrt(x);
     });
-    auto composition = (square, round);
-    std::cout << composition(3.14f) << std::endl;
+
+    auto composition = (square, 5 * add1, sqrt);
+    std::cout << composition(2) << std::endl;
 
     return 0;
 }
