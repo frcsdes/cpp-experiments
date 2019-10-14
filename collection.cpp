@@ -2,6 +2,8 @@
 #include <type_traits>
 
 
+// Lessons should be taken from Jorg Brown's talk @ CppCon2019
+// Variadic inheritance could apply here to a certain extent
 template<class T, class... TPack>
 class Collection : Collection<TPack...> {
     using Base = Collection<TPack...>;
@@ -10,12 +12,12 @@ public:
     Collection(T value, TPack... args)
         : Base(args...), m_value(value) {}
 
-    template<class U, std::enable_if_t<std::is_same_v<T, U>, char> = 0>
+    template<class U, std::enable_if_t<std::is_same_v<T, U>, int> = 0>
     U& get() {
         return m_value;
     }
 
-    template<class U, std::enable_if_t<!std::is_same_v<T, U>, char> = 0>
+    template<class U, std::enable_if_t<!std::is_same_v<T, U>, int> = 0>
     U& get() {
         return Base::template get<U>();
     }
