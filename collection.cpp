@@ -12,13 +12,13 @@ public:
     Collection(T value, TPack... args)
         : Base(args...), m_value(value) {}
 
-    template<class U, std::enable_if_t<std::is_same_v<T, U>, int> = 0>
-    U& get() {
+    template<class U>
+    std::enable_if_t<std::is_same_v<T, U>, U>& get() {
         return m_value;
     }
 
-    template<class U, std::enable_if_t<!std::is_same_v<T, U>, int> = 0>
-    U& get() {
+    template<class U>
+    std::enable_if_t<!std::is_same_v<T, U>, U>& get() {
         return Base::template get<U>();
     }
 
@@ -61,7 +61,7 @@ private:
 
 int main() {
     Collection<int, float, double> collection(42, 3.14f, 2.718);
-    collection.get<double>() = 6.626;
+    collection.get<double>() = 6.86;
     collection.print();
     std::cout << "Sum is " << collection.sum() << std::endl;
     return 0;
