@@ -2,67 +2,77 @@
 #include <type_traits>
 
 
-// Lessons should be taken from Jorg Brown's talk @ CppCon2019
-// Variadic inheritance could apply here to a certain extent
-template<class T, class... TPack>
-class Collection : Collection<TPack...> {
-    using Base = Collection<TPack...>;
+// Jorg Brown's "Reducing Template Compilation Overhead"
+// Could variadic inheritance apply here?
+template<class T, class... Rest>
+class Collection : Collection<Rest...> {
+    using Base = Collection<Rest...>;
 
 public:
-    Collection(T value, TPack... args)
-        : Base(args...), m_value(value) {}
+    explicit Collection(T&& value, Rest&&... rest)
+        : Base(std::forward<Rest>(rest)...), value_(value) {}
 
     template<class U>
-    std::enable_if_t<std::is_same_v<T, U>, U>& get() {
-        return m_value;
+    std::enable_if_t<std::is_same_v<T, U>, U>&
+    get() {
+        return value_;
     }
 
     template<class U>
-    std::enable_if_t<!std::is_same_v<T, U>, U>& get() {
+    std::enable_if_t<!std::is_same_v<T, U>, U>&
+    get() {
         return Base::template get<U>();
     }
 
     auto sum() const {
-        return m_value + Base::sum();
+        return value_ + Base::sum();
     }
 
     void print() const {
-        std::cout << m_value << ' ';
+        std::cout << value_ << ' ';
         Base::print();
     }
 
 private:
-    T m_value;
+    T value_;
 };
 
 template<class T>
 class Collection<T> {
 public:
-    explicit Collection(T value)
-        : m_value(value) {}
+    explicit Collection(T&& value)
+        : value_(value) {}
 
     void print() const {
-        std::cout << m_value << std::endl;
+        std::cout << value_ << std::endl;
     }
 
     template<class U>
     U& get() {
-        return m_value;
+        return value_;
     }
 
     auto sum() const {
-        return m_value;
+        return value_;
     }
 
 private:
-    T m_value;
+    T value_;
 };
 
 
 int main() {
-    Collection<int, float, double> collection(42, 3.14f, 2.718);
+    // Much like a tuple with (unique) typed access and accumulating operations
+    // An empty base case is simpler but does not allow specific tail behaviour
+
+    Collection<int, float, double> collection(32, 3.14f, 2.718);
     collection.get<double>() = 6.86;
     collection.print();
-    std::cout << "Sum is " << collection.sum() << std::endl;
+    std::cout << "Sum is " << collection.sum() << "\n\n";
+
+    Collection<int, double, double> woops(32, 3.14, 2.718);
+    woops.get<double>() = 6.86;
+    woops.print();
+
     return 0;
 }
