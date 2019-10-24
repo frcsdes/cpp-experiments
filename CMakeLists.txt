@@ -3,9 +3,15 @@ project(cpp-experiments)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(collection collection.cpp)
-add_executable(composition composition.cpp)
-add_executable(holder holder.cpp)
-add_executable(nice nice.cpp)
-add_executable(result result.cpp)
-add_executable(store store.cpp)
+set(SNIPPETS
+    collection
+    composition
+    nice
+    pointer
+    result
+    store
+)
+
+foreach(S ${SNIPPETS})
+    add_executable(${S} ${S}.cpp)
+endforeach()
