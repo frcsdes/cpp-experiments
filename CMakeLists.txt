@@ -4,6 +4,7 @@ project(cpp-experiments)
 set(CMAKE_CXX_STANDARD 17)
 
 set(SNIPPETS
+    base
     collection
     composition
     nice
