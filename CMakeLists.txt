@@ -11,6 +11,7 @@ set(SNIPPETS
     pointer
     result
     store
+    timer
 )
 
 foreach(S ${SNIPPETS})
