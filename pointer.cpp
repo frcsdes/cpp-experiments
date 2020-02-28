@@ -5,13 +5,13 @@
 template<class T>
 class Pointer {
 public:
-    Pointer() : pointer_(nullptr) {}
+    Pointer() : pointer_{nullptr} {}
 
     template<class U>
-    Pointer(Pointer<U> other) : Pointer(other.operator->()) {}
+    Pointer(Pointer<U> other) : Pointer{other.operator->()} {}
 
     template<template<class> class Smart, class U>
-    Pointer(Smart<U> const& smart) : Pointer(smart.get()) {}
+    Pointer(Smart<U> const& smart) : Pointer{smart.get()} {}
 
     template<template<class> class Smart, class U>
     Pointer(Smart<U>&&) = delete;
@@ -23,7 +23,7 @@ public:
 
 private:
     template<class U>
-    explicit Pointer(U* raw) : pointer_(raw) {}
+    explicit Pointer(U* raw) : pointer_{raw} {}
 
     T* pointer_;
 };
@@ -39,10 +39,10 @@ int main() {
     std::cout << "Scope begin" << '\n';
 
     auto unique = std::make_unique<Data>();
-    Pointer<Data> dumb1(unique);
+    Pointer<Data> dumb1{unique};
 
     auto shared = std::make_shared<Data>();
-    Pointer<Data> dumb2(shared);
+    Pointer<Data> dumb2{shared};
 
     // No thanks, I'm too dumb to assume ownership
     // Pointer<Data> dumb3(std::move(unique));

@@ -13,7 +13,7 @@ class Variable {
 public:
     Variable() = default;
     explicit Variable(TIn value)
-        : m_value(std::forward<TIn>(value)) {}
+        : value_{std::forward<TIn>(value)} {}
 
     Variable& operator=(TIn value) {
         update(std::forward<TIn>(value));
@@ -21,26 +21,27 @@ public:
     }
 
     TOut operator*() const {
-        return m_value;
+        return value_;
     }
 
     void watch(Functor functor) {
-        m_watchers.push_back(std::move(functor));
+        watchers_.push_back(std::move(functor));
     }
 
 private:
-    T m_value{};
-    std::vector<Functor> m_watchers;
-    std::mutex m_mutex;
-    bool m_updating = false;
+    T value_{};
+    std::vector<Functor> watchers_;
+    std::mutex mutex_;
+    bool updating_{false};
 
     void update(TIn value) {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        if (!m_updating) {
-            m_updating = true;
-            for (auto const& w : m_watchers) w(value);
-            m_value = value;
-            m_updating = false;
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (!updating_) {
+            updating_ = true;
+            for (auto const& watcher : watchers_)
+                watcher(value);
+            value_ = value;
+            updating_ = false;
         }
     }
 };

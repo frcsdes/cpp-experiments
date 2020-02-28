@@ -31,9 +31,9 @@ public:
     auto operator&&(Result<U...> const& other) const {
         using Concat = Result<T..., U...>;
         return valid() && other.valid()
-             ? Concat(std::tuple_cat(value(), other.value()))
-             : valid() ? Concat(other.error())
-                       : Concat(error());
+             ? Concat{std::tuple_cat(value(), other.value())}
+             : valid() ? Concat{other.error()}
+                       : Concat{error()};
     }
 
     template<class F>
@@ -47,8 +47,8 @@ public:
     auto transform(F functor) {
         using R = decltype(std::declval<F>()(std::declval<T>()...));
         return valid()
-             ? Result<R>(std::apply(functor, value()))
-             : Result<R>(error());
+             ? Result<R>{std::apply(functor, value())}
+             : Result<R>{error()};
     }
 
     auto value_or(Value or_default) const {
@@ -78,19 +78,23 @@ int main() {
     auto report = [](auto const& result) {
         std::cout << (result ? "success" : "failure") << '\n';
     };
-    auto print = [](auto x) { std::cout << x << '\n'; };
-    auto addition = []<class... Args>(Args... args) { return (args + ...); };
+    auto print = [](auto x) {
+        std::cout << x << '\n';
+    };
+    auto addition = [](auto... args) {
+        return (args + ...);
+    };
 
-    Result<int>  i1(22);
-    Result<int>  i2(37);
-    Result<long> i3(41);
+    Result<int>  i1{22};
+    Result<int>  i2{37};
+    Result<long> i3{41};
     report((i1 && i2 && i3).transform(addition).apply(print));
 
-    Result<double> d1(Error{"error"});
-    Result<double> d2(3.14);
+    Result<double> d1{Error{"error"}};
+    Result<double> d2{3.14};
     report(d1 && d2);
     report(d1 || d2);
-    d2.apply([](auto& x) { x *= 2; }).apply(print);
+    d2.apply([](auto&& x) { x *= 2; }).apply(print);
 
     // More enable_if...
     // Andrei Alexandrescu's "Expect the Unexpected"
