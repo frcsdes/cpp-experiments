@@ -12,6 +12,7 @@ set(SNIPPETS
     result
     store
     timer
+    swizzling
 )
 
 foreach(S ${SNIPPETS})
