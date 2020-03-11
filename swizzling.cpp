@@ -22,7 +22,7 @@ constexpr Vec<sizeof...(C), T> operator|(Vec<N, T> const& vector, Mask<C...>) {
 
 template<auto N, class T>
 std::ostream& operator<<(std::ostream& os, Vec<N, T> const& vector) {
-    std::apply([&os](auto... coefficient) {
+    std::apply([&os](auto&&... coefficient) {
         ((os << coefficient << ' '), ...) << '\n';
     }, static_cast<std::array<T, N> const&>(vector));
     return os;
