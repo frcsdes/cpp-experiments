@@ -33,12 +33,12 @@ int main() {
     // Swizzling by using a mask of indices
     // Example: vec.zyx becomes vec | 210_m
 
-    constexpr Vec<4> sequence{10, 11, 12, 13};
-    constexpr auto reverse = sequence | 3210_m;
+    Vec<4> constexpr sequence{10, 11, 12, 13};
+    Vec<4> constexpr reverse = sequence | 3210_m;
     std::cout << sequence << reverse;
 
-    constexpr Vec<2> bernoulli{-1, 1};
-    constexpr auto samples = bernoulli | 01110100_m;
+    Vec<2> constexpr bernoulli{-1, 1};
+    auto constexpr samples = bernoulli | 01110100_m;
     std::cout << samples;
 
     return 0;
