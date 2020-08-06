@@ -12,15 +12,15 @@ constexpr Mask<C...> operator""_m() {
 }
 
 
-template<auto N, class T = float>
+template<std::size_t N, class T = float>
 struct Vec : std::array<T, N> {};
 
-template<auto N, class T, char... C>
+template<std::size_t N, class T, char... C>
 constexpr Vec<sizeof...(C), T> operator|(Vec<N, T> const& vector, Mask<C...>) {
     return {std::get<static_cast<std::size_t>(C - 48)>(vector)...};
 }
 
-template<auto N, class T>
+template<std::size_t N, class T>
 std::ostream& operator<<(std::ostream& os, Vec<N, T> const& vector) {
     std::apply([&os](auto&&... coefficient) {
         ((os << coefficient << ' '), ...) << '\n';

@@ -6,6 +6,10 @@ struct Verbose {
         std::cout << "Default constructor\n";
     }
 
+    ~Verbose() {
+        std::cout << "Destructor\n";
+    }
+
     Verbose(Verbose const&) {
         std::cout << "Copy constructor\n";
     }
@@ -31,6 +35,6 @@ std::ostream& operator<<(std::ostream& os, Verbose const&) {
 }
 
 std::istream& operator<<(std::istream& is, Verbose const&) {
-    std::cout << "Stream ind\n";
+    std::cout << "Stream in\n";
     return is;
 }

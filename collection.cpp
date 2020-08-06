@@ -13,14 +13,14 @@ public:
         : Base{std::forward<Rest>(rest)...}, value_{value} {}
 
     template<class U>
-    std::enable_if_t<std::is_same_v<T, U>, U>&
-    get() {
+    requires std::is_same_v<T, U>
+    U& get() {
         return value_;
     }
 
     template<class U>
-    std::enable_if_t<!std::is_same_v<T, U>, U>&
-    get() {
+    requires !std::is_same_v<T, U>
+    U& get() {
         return Base::template get<U>();
     }
 

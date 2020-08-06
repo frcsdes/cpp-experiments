@@ -18,4 +18,5 @@ set(SNIPPETS
 
 foreach(S ${SNIPPETS})
     add_executable(${S} ${S}.cpp)
+    target_compile_options(${S} PRIVATE -fconcepts -Werror -Wall -Wextra -Wpedantic)
 endforeach()

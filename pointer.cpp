@@ -1,6 +1,10 @@
 #include <iostream>
 #include <memory>
+#include <type_traits>
 
+template<template<class> class T, class U>
+concept SmartPointer = std::is_same_v<T<U>, std::unique_ptr<U>>
+                    || std::is_same_v<T<U>, std::shared_ptr<U>>;
 
 template<class T>
 class Pointer {
@@ -11,9 +15,11 @@ public:
     Pointer(Pointer<U> other) : Pointer{other.operator->()} {}
 
     template<template<class> class Smart, class U>
+    requires SmartPointer<Smart, U>
     Pointer(Smart<U> const& smart) : Pointer{smart.get()} {}
 
     template<template<class> class Smart, class U>
+    requires SmartPointer<Smart, U>
     Pointer(Smart<U>&&) = delete;
 
     T* operator->() const { return pointer_; }
