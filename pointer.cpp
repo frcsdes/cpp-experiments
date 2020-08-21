@@ -2,34 +2,40 @@
 #include <memory>
 #include <type_traits>
 
-template<template<class> class T, class U>
-concept SmartPointer = std::is_same_v<T<U>, std::unique_ptr<U>>
-                    || std::is_same_v<T<U>, std::shared_ptr<U>>;
+template<template<class> class Pointer, class Resource>
+concept OwningPointer =
+requires (Pointer<Resource> const pointer) {
+    { pointer.get() } -> Resource*;
+};
 
 template<class T>
-class Pointer {
+class Ptr {
+    using LRef = std::add_lvalue_reference_t<T>;
+
 public:
-    Pointer() : pointer_{nullptr} {}
+    constexpr Ptr() noexcept : pointer_{nullptr} {}
+    constexpr Ptr(std::nullptr_t) noexcept : Ptr{} {}
 
     template<class U>
-    Pointer(Pointer<U> other) : Pointer{other.operator->()} {}
+    Ptr(Ptr<U> other) noexcept : Ptr{other.get()} {}
 
     template<template<class> class Smart, class U>
-    requires SmartPointer<Smart, U>
-    Pointer(Smart<U> const& smart) : Pointer{smart.get()} {}
+    requires OwningPointer<Smart, U>
+    Ptr(Smart<U> const& smart) noexcept : Ptr{smart.get()} {}
 
     template<template<class> class Smart, class U>
-    requires SmartPointer<Smart, U>
-    Pointer(Smart<U>&&) = delete;
+    requires OwningPointer<Smart, U>
+    Ptr(Smart<U>&&) = delete;
 
-    T* operator->() const { return pointer_; }
-    T& operator*() const { return *pointer_; }
+    T* get() const noexcept { return pointer_; }
+    T* operator->() const noexcept { return pointer_; }
+    LRef operator*() const { return *pointer_; }
 
-    explicit operator bool() const { return pointer_; }
+    explicit operator bool() const noexcept { return pointer_; }
 
 private:
     template<class U>
-    explicit Pointer(U* raw) : pointer_{raw} {}
+    explicit Ptr(U* raw) noexcept : pointer_{raw} {}
 
     T* pointer_;
 };
@@ -45,10 +51,10 @@ int main() {
     std::cout << "Scope begin" << '\n';
 
     auto unique = std::make_unique<Data>();
-    Pointer<Data> dumb1{unique};
+    Ptr<Data> dumb1{unique};
 
     auto shared = std::make_shared<Data>();
-    Pointer<Data> dumb2{shared};
+    Ptr<Data> dumb2{shared};
 
     // No thanks, I'm too dumb to assume ownership
     // Pointer<Data> dumb3(std::move(unique));
