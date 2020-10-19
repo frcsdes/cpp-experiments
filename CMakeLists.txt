@@ -6,11 +6,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(SNIPPETS
     base
     collection
-    composition
     nice
     pointer
     result
-    store
     timer
     swizzling
     swizzling2
@@ -18,5 +16,9 @@ set(SNIPPETS
 
 foreach(S ${SNIPPETS})
     add_executable(${S} ${S}.cpp)
-    target_compile_options(${S} PRIVATE -fconcepts -Werror -Wall -Wextra -Wpedantic)
+    if(MSVC)
+        target_compile_options(${S} PRIVATE /WX /W4)
+    else(MSVC)
+        target_compile_options(${S} PRIVATE -fconcepts -Werror -Wall -Wextra -Wpedantic)
+    endif(MSVC)
 endforeach()
