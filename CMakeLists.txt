@@ -6,12 +6,15 @@ set(CMAKE_CXX_STANDARD 20)
 set(SNIPPETS
     base
     collection
+    composition
+    map
     nice
     pointer
     result
-    timer
+    store
     swizzling
     swizzling2
+    timer
 )
 
 foreach(S ${SNIPPETS})

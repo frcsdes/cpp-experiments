@@ -5,7 +5,7 @@
 template<template<class> class Pointer, class Resource>
 concept OwningPointer =
 requires (Pointer<Resource> const pointer) {
-    { pointer.get() } -> Resource*;
+    { pointer.get() } -> std::same_as<Resource*>;
 };
 
 template<class T>
